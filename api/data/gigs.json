@@ -1,0 +1,51 @@
+{
+  "categories": {
+    "bounty": [
+      {
+        "id": "sample_b1",
+        "title": "[TASK] $40 - Need someone to clean up a messy CSV of 2k rows",
+        "subreddit": "slavelabour",
+        "author": "sample_user",
+        "flair": "Task",
+        "url": "https://www.reddit.com/r/slavelabour",
+        "created_utc": 1752300000,
+        "score": 4,
+        "num_comments": 2,
+        "snippet": "This is placeholder sample data. Run scraper.py locally to replace it with live Reddit results.",
+        "category": "bounty"
+      }
+    ],
+    "website": [
+      {
+        "id": "sample_w1",
+        "title": "[HIRING] Need a 5-page WordPress site for a small bakery, $300 budget",
+        "subreddit": "forhire",
+        "author": "sample_user",
+        "flair": "Hiring",
+        "url": "https://www.reddit.com/r/forhire",
+        "created_utc": 1752286000,
+        "score": 7,
+        "num_comments": 5,
+        "snippet": "This is placeholder sample data. Run scraper.py locally to replace it with live Reddit results.",
+        "category": "website"
+      }
+    ],
+    "design": [
+      {
+        "id": "sample_d1",
+        "title": "[HIRING] Product designer needed for a 2-week Figma sprint",
+        "subreddit": "ProductDesign",
+        "author": "sample_user",
+        "flair": "Hiring",
+        "url": "https://www.reddit.com/r/ProductDesign",
+        "created_utc": 1752272000,
+        "score": 11,
+        "num_comments": 3,
+        "snippet": "This is placeholder sample data. Run scraper.py locally to replace it with live Reddit results.",
+        "category": "design"
+      }
+    ]
+  },
+  "generated_at": null,
+  "is_sample": true
+}
