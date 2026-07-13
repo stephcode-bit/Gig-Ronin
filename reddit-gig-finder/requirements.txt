@@ -1,0 +1,3 @@
+# No external dependencies -- api/reddit_gigs.py uses only Python's standard
+# library (urllib) so cold starts on Vercel stay fast. Kept here so Vercel's
+# Python builder recognizes this as a Python project.

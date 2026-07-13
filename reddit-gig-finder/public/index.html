@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Gig Ronin — Reddit Bounty &amp; Design Gig Finder</title>
+<meta name="description" content="Finds bounty, website, and product design gigs posted on Reddit, in real time." />
+<meta name="theme-color" content="#FF4500" />
+
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16.png" />
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bg: #0f0f10;
+    --bg-raised: #1a1a1b;
+    --card: #1f2021;
+    --card-hover: #24262a;
+    --border: #343536;
+    --text: #d7dadc;
+    --text-muted: #818384;
+    --orange: #ff4500;
+    --orange-bright: #ff8717;
+    --blue: #0079d3;
+    --gold: #e8a428;
+    --radius: 10px;
+    --font-display: "Space Grotesk", system-ui, sans-serif;
+    --font-body: "Inter", system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; }
+
+  /* ---------- header ---------- */
+  header.top {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--bg-raised);
+    border-bottom: 1px solid var(--border);
+    padding: 14px clamp(16px, 4vw, 40px);
+  }
+
+  .brand-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+
+  .brand-row img {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+
+  .brand-text h1 {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: 0.2px;
+  }
+
+  .brand-text p {
+    margin: 2px 0 0;
+    font-size: 12.5px;
+    color: var(--text-muted);
+  }
+
+  .blade {
+    height: 3px;
+    max-width: 1180px;
+    margin: 12px auto 0;
+    background: linear-gradient(90deg, var(--orange) 0%, var(--orange-bright) 55%, transparent 100%);
+    clip-path: polygon(0 0, 96% 0, 100% 50%, 96% 100%, 0 100%);
+  }
+
+  /* ---------- controls ---------- */
+  .controls {
+    max-width: 1180px;
+    margin: 18px auto 0;
+    padding: 0 clamp(16px, 4vw, 40px);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .tab {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 13.5px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .tab:hover { color: var(--text); border-color: var(--orange-bright); }
+
+  .tab.active {
+    background: var(--orange);
+    border-color: var(--orange);
+    color: #fff;
+  }
+
+  .search-row {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+    flex: 1 1 260px;
+    max-width: 380px;
+  }
+
+  .search-row input {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 9px 16px;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    outline: none;
+    height: 38px;
+    max-height: 38px;
+  }
+
+  .search-row input:focus { border-color: var(--blue); }
+
+  .search-row button, .refresh-btn {
+    background: var(--orange-bright);
+    color: #1a0800;
+    border: none;
+    border-radius: 999px;
+    padding: 0 16px;
+    height: 38px;
+    max-height: 38px;
+    font-weight: 600;
+    font-size: 13.5px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .search-row button:hover, .refresh-btn:hover { background: var(--orange); color: #fff; }
+
+  /* ---------- status ---------- */
+  .status {
+    max-width: 1180px;
+    margin: 14px auto 0;
+    padding: 0 clamp(16px, 4vw, 40px);
+    font-size: 13px;
+    color: var(--text-muted);
+    min-height: 18px;
+  }
+
+  .status.error { color: #ff6a6a; }
+  .status.sample { color: var(--gold); }
+
+  /* ---------- grid ---------- */
+  main {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 14px clamp(16px, 4vw, 40px) 60px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-decoration: none;
+    transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
+  }
+
+  .card:hover {
+    background: var(--card-hover);
+    border-color: var(--orange-bright);
+    transform: translateY(-2px);
+  }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .sub-badge {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--blue);
+  }
+
+  .flair {
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    background: rgba(255, 69, 0, 0.15);
+    color: var(--orange-bright);
+    padding: 3px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .card-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 15.5px;
+    line-height: 1.35;
+    color: var(--text);
+  }
+
+  .card-snippet {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-meta {
+    display: flex;
+    gap: 14px;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: auto;
+    padding-top: 6px;
+    border-top: 1px solid var(--border);
+  }
+
+  .card-meta span { display: flex; align-items: center; gap: 4px; }
+
+  /* ---------- empty / skeleton ---------- */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+  }
+
+  .empty img { width: 72px; opacity: 0.5; margin-bottom: 12px; border-radius: 14px; }
+
+  .skeleton-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    height: 150px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .skeleton-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 133, 23, 0.08), transparent);
+    animation: shimmer 1.3s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  footer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    padding: 20px;
+  }
+
+  footer a { color: var(--orange-bright); text-decoration: none; }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 640px) {
+    .brand-text p { display: none; }
+    .controls { flex-direction: column; align-items: stretch; }
+    .search-row { flex: 0 1 auto; width: 100%; max-width: none; margin-left: 0; }
+    .tabs { justify-content: space-between; }
+    .tab { flex: 1; text-align: center; padding: 8px 6px; font-size: 12.5px; }
+  }
+
+  @media (min-width: 1400px) {
+    header.top, .controls, .status, main { max-width: 1320px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand-row">
+    <img src="/icons/icon-192.png" alt="Gig Ronin samurai emblem" />
+    <div class="brand-text">
+      <h1>Gig Ronin</h1>
+      <p>A masterless blade for hire — hunting bounty, website &amp; design gigs across Reddit</p>
+    </div>
+  </div>
+  <div class="blade"></div>
+</header>
+
+<div class="controls">
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-cat="">All</button>
+    <button class="tab" data-cat="bounty">Bounties</button>
+    <button class="tab" data-cat="website">Website Gigs</button>
+    <button class="tab" data-cat="design">Product Design</button>
+  </div>
+  <form class="search-row" id="searchForm">
+    <input id="searchInput" type="search" placeholder="Search a keyword, e.g. Figma" />
+    <button type="submit">Search</button>
+  </form>
+  <button class="refresh-btn" id="refreshBtn" title="Refresh results">↻ Refresh</button>
+</div>
+
+<div class="status" id="status">Loading gigs from Reddit…</div>
+<div class="status" id="freshness"></div>
+
+<main>
+  <div class="grid" id="grid"></div>
+</main>
+
+<footer>
+  Data pulled live from public Reddit search. Not affiliated with Reddit Inc. · <a href="https://www.reddit.com" target="_blank" rel="noopener">reddit.com</a>
+</footer>
+
+<script>
+  const grid = document.getElementById("grid");
+  const status = document.getElementById("status");
+  const freshness = document.getElementById("freshness");
+  const tabsEl = document.getElementById("tabs");
+  const searchForm = document.getElementById("searchForm");
+  const searchInput = document.getElementById("searchInput");
+  const refreshBtn = document.getElementById("refreshBtn");
+
+  let activeCategory = "";
+
+  function formatGeneratedAt(iso) {
+    if (!iso) return null;
+    const d = new Date(iso);
+    return d.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+  }
+
+  function updateFreshness(data) {
+    if (data.is_sample) {
+      freshness.textContent = "Showing placeholder sample data — run scraper.py locally and redeploy to see real gigs.";
+      freshness.classList.add("sample");
+      return;
+    }
+    const when = formatGeneratedAt(data.generated_at);
+    freshness.textContent = when ? `Data snapshot from ${when}` : "";
+    freshness.classList.remove("sample");
+  }
+
+  function timeAgo(unixSeconds) {
+    if (!unixSeconds) return "";
+    const seconds = Math.floor(Date.now() / 1000 - unixSeconds);
+    const units = [["y", 31536000], ["mo", 2592000], ["d", 86400], ["h", 3600], ["m", 60]];
+    for (const [label, secs] of units) {
+      const val = Math.floor(seconds / secs);
+      if (val >= 1) return `${val}${label} ago`;
+    }
+    return "just now";
+  }
+
+  function skeleton(count) {
+    grid.innerHTML = Array.from({ length: count }).map(() => `<div class="skeleton-card"></div>`).join("");
+  }
+
+  function cardHTML(post) {
+    const flair = post.flair ? `<span class="flair">${escapeHTML(post.flair)}</span>` : "";
+    return `
+      <a class="card" href="${post.url}" target="_blank" rel="noopener">
+        <div class="card-top">
+          <span class="sub-badge">r/${escapeHTML(post.subreddit || "")}</span>
+          ${flair}
+        </div>
+        <div class="card-title">${escapeHTML(post.title || "")}</div>
+        ${post.snippet ? `<div class="card-snippet">${escapeHTML(post.snippet)}</div>` : ""}
+        <div class="card-meta">
+          <span>▲ ${post.score ?? 0}</span>
+          <span>💬 ${post.num_comments ?? 0}</span>
+          <span>${timeAgo(post.created_utc)}</span>
+        </div>
+      </a>`;
+  }
+
+  function escapeHTML(str) {
+    return String(str).replace(/[&<>"']/g, (c) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+    }[c]));
+  }
+
+  function renderPosts(posts) {
+    if (!posts || posts.length === 0) {
+      grid.innerHTML = `
+        <div class="empty" style="grid-column: 1/-1;">
+          <img src="/icons/icon-192.png" alt="No gigs found" />
+          <div>No gigs found right now. The ronin's search continues — try Refresh or a different keyword.</div>
+        </div>`;
+      return;
+    }
+    grid.innerHTML = posts.map(cardHTML).join("");
+  }
+
+  async function loadCategory(category) {
+    activeCategory = category;
+    [...tabsEl.children].forEach((btn) => btn.classList.toggle("active", btn.dataset.cat === category));
+    skeleton(6);
+    status.textContent = "Loading gigs from Reddit…";
+    status.classList.remove("error");
+    try {
+      const url = category ? `/api/search?category=${encodeURIComponent(category)}` : "/api/search";
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Server responded ${res.status}`);
+      const data = await res.json();
+      let posts = [];
+      if (data.results) posts = data.results;
+      else if (data.categories) posts = Object.values(data.categories).flat().sort((a, b) => (b.created_utc || 0) - (a.created_utc || 0));
+      renderPosts(posts);
+      status.textContent = `${posts.length} gig${posts.length === 1 ? "" : "s"} found`;
+      updateFreshness(data);
+    } catch (err) {
+      status.textContent = `Couldn't reach the API: ${err.message}`;
+      status.classList.add("error");
+      grid.innerHTML = "";
+    }
+  }
+
+  async function runSearch(keyword) {
+    [...tabsEl.children].forEach((btn) => btn.classList.remove("active"));
+    skeleton(6);
+    status.textContent = `Searching Reddit for "${keyword}"…`;
+    status.classList.remove("error");
+    try {
+      const res = await fetch(`/api/search?q=${encodeURIComponent(keyword)}`);
+      if (!res.ok) throw new Error(`Server responded ${res.status}`);
+      const data = await res.json();
+      renderPosts(data.results || []);
+      status.textContent = `${(data.results || []).length} result(s) for "${keyword}"`;
+      updateFreshness(data);
+    } catch (err) {
+      status.textContent = `Couldn't reach the API: ${err.message}`;
+      status.classList.add("error");
+      grid.innerHTML = "";
+    }
+  }
+
+  tabsEl.addEventListener("click", (e) => {
+    const btn = e.target.closest(".tab");
+    if (!btn) return;
+    searchInput.value = "";
+    loadCategory(btn.dataset.cat);
+  });
+
+  searchForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const keyword = searchInput.value.trim();
+    if (keyword) runSearch(keyword);
+    else loadCategory(activeCategory);
+  });
+
+  refreshBtn.addEventListener("click", () => {
+    if (searchInput.value.trim()) runSearch(searchInput.value.trim());
+    else loadCategory(activeCategory);
+  });
+
+  loadCategory("");
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/sw.js").catch(() => {});
+    });
+  }
+</script>
+
+</body>
+</html>
