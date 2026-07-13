@@ -1,0 +1,62 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Red samurai helmet emblem with gold coin">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1A1A1B"/>
+      <stop offset="100%" stop-color="#0B0B0C"/>
+    </linearGradient>
+    <linearGradient id="helm" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FF6A33"/>
+      <stop offset="55%" stop-color="#FF4500"/>
+      <stop offset="100%" stop-color="#B23000"/>
+    </linearGradient>
+    <linearGradient id="horn" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF8717"/>
+      <stop offset="100%" stop-color="#D13B00"/>
+    </linearGradient>
+    <linearGradient id="coin" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFD873"/>
+      <stop offset="100%" stop-color="#E8A428"/>
+    </linearGradient>
+  </defs>
+
+  <!-- badge background -->
+  <rect x="0" y="0" width="512" height="512" rx="96" fill="url(#bg)"/>
+  <circle cx="256" cy="256" r="222" fill="none" stroke="#FF4500" stroke-width="10" opacity="0.55"/>
+
+  <!-- crescent horns (kuwagata) -->
+  <path d="M256 168 C 210 96, 128 78, 84 118 C 120 132, 150 158, 168 206 C 196 186, 226 174, 256 168 Z" fill="url(#horn)"/>
+  <path d="M256 168 C 302 96, 384 78, 428 118 C 392 132, 362 158, 344 206 C 316 186, 286 174, 256 168 Z" fill="url(#horn)"/>
+
+  <!-- helmet dome -->
+  <path d="M256 150
+           C 190 150, 138 196, 132 258
+           C 130 278, 134 296, 142 312
+           L 118 340
+           C 112 348, 116 360, 126 362
+           L 178 372
+           C 200 386, 227 394, 256 394
+           C 285 394, 312 386, 334 372
+           L 386 362
+           C 396 360, 400 348, 394 340
+           L 370 312
+           C 378 296, 382 278, 380 258
+           C 374 196, 322 150, 256 150 Z"
+        fill="url(#helm)" stroke="#8A2600" stroke-width="4"/>
+
+  <!-- crest/maedate spike -->
+  <path d="M256 128 L 244 168 L 268 168 Z" fill="url(#horn)"/>
+
+  <!-- face guard bars (menpo) -->
+  <path d="M186 330 Q 256 366, 326 330" fill="none" stroke="#2A0D00" stroke-width="8" stroke-linecap="round"/>
+  <path d="M196 350 Q 256 380, 316 350" fill="none" stroke="#2A0D00" stroke-width="8" stroke-linecap="round"/>
+
+  <!-- eyes -->
+  <path d="M206 258 L 232 264" stroke="#1A0800" stroke-width="9" stroke-linecap="round"/>
+  <path d="M306 258 L 280 264" stroke="#1A0800" stroke-width="9" stroke-linecap="round"/>
+
+  <!-- gold coin: samurai "making money" -->
+  <circle cx="358" cy="366" r="66" fill="url(#coin)" stroke="#8A5A00" stroke-width="6"/>
+  <circle cx="358" cy="366" r="46" fill="none" stroke="#8A5A00" stroke-width="4" opacity="0.7"/>
+  <text x="358" y="386" font-family="Georgia, 'Times New Roman', serif" font-size="54" font-weight="700"
+        text-anchor="middle" fill="#7A4E00">$</text>
+</svg>
